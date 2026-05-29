@@ -41,10 +41,49 @@ normalStyle = stylesheet['Normal']
 
 import reportlab.rl_config
 reportlab.rl_config.warnOnMissingFontGlyphs = 0
+import os
+import sys
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+
 pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
-pdfmetrics.registerFont(TTFont('cwTeXQHeiBd', 'C:/Windows/Fonts/cwTeXQHei-Bold.ttf'))
+
+# Register a Chinese font (cwTeXQHeiBd)
+# We look for the font file in a list of potential paths (Windows, Linux, macOS, etc.)
+chinese_font_paths = [
+    # Original Windows path
+    "C:/Windows/Fonts/cwTeXQHei-Bold.ttf",
+    # Arch Linux / general Linux path for WenQuanYi Zen Hei
+    "/usr/share/fonts/wenquanyi/wqy-zenhei/wqy-zenhei.ttc",
+    # Arch Linux / general Linux path for WenQuanYi Micro Hei
+    "/usr/share/fonts/wenquanyi/wqy-microhei/wqy-microhei.ttc",
+    # Debian/Ubuntu path for WenQuanYi Zen Hei
+    "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",
+    # Debian/Ubuntu path for WenQuanYi Micro Hei
+    "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc",
+    # Fedora / CentOS path for WenQuanYi Zen Hei
+    "/usr/share/fonts/wqy-zenhei/wqy-zenhei.ttc",
+    # macOS path (fallback to standard Heiti / PingFang if they are TrueType, or others)
+    "/System/Library/Fonts/STHeiti Light.ttc",
+    "/System/Library/Fonts/STHeiti Medium.ttc",
+    "/System/Library/Fonts/PingFang.ttc",
+]
+
+font_loaded = False
+for path in chinese_font_paths:
+    if os.path.exists(path):
+        try:
+            pdfmetrics.registerFont(TTFont('cwTeXQHeiBd', path))
+            font_loaded = True
+            break
+        except Exception as e:
+            continue
+
+if not font_loaded:
+    raise OSError(
+        "Could not find a suitable Chinese font (like cwTeXQHei or WenQuanYi) for registering 'cwTeXQHeiBd'. "
+        "Please install wqy-zenhei (on Arch/Ubuntu/Debian) or ensure cwTeXQHei-Bold.ttf is available."
+    )
 
 import re
 import pandas as pd
@@ -314,7 +353,12 @@ def cli():
 
     :return:
     """
-    filename = "./bookshelf_main.csv"
+    # Look for bookshelf_main.csv relative to the script directory first
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    filename = os.path.join(script_dir, "bookshelf_main.csv")
+    if not os.path.exists(filename):
+        # Fall back to current working directory
+        filename = "./bookshelf_main.csv"
     # 需要去掉的欄位
     # removed :
     # reprint :
