@@ -285,8 +285,12 @@ def make_pdf(array,page_num,row,col):
     name_ext = "pdf"
     max_sn = ""
 
+    # Get the directory of the current script (which is the 'src' directory)
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
     for i in range(page_num):
-        filename = "{}-p{:02d}.{}".format(name_base,i,name_ext)
+        pdf_name = "{}-p{:02d}.{}".format(name_base,i,name_ext)
+        filename = os.path.join(script_dir, pdf_name)
 
         doc = SimpleDocTemplate(filename, pagesize=(A4[1], A4[0]),
                             topMargin=0.2 * cm,

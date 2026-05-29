@@ -3,3 +3,4 @@
 - 修改 src/simple_table_grid.py 以支援在 Arch Linux 上執行：
   1. 更新中文字型 (cwTeXQHeiBd) 載入邏輯：由原本寫死的 Windows 路徑 "C:/Windows/Fonts/cwTeXQHei-Bold.ttf" 改為支援多個候選路徑（包括 Arch Linux 上的文泉驛正黑體 wqy-zenhei.ttc / 微米黑體 wqy-microhei.ttc、Debian/Ubuntu 上的文泉驛字型、macOS 系統字型等）。
   2. 修改 bookshelf_main.csv 檔案路徑解析：優先從腳本所在的同目錄尋找 bookshelf_main.csv，避免因在專案根目錄等不同工作目錄下執行時拋出 FileNotFoundError。
+  3. 修改產出 PDF 檔案路徑解析：將產出的 PDF 檔案路徑設定為腳本所在的同目錄（即 src 目錄下），確保無論從何處執行，輸出的 PDF 均會集中存放在 src 目錄。
